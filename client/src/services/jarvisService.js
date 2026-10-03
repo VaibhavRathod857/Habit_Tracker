@@ -1,4 +1,4 @@
-import api from './api.js';
+import api, { API_BASE_URL } from './api.js';
 
 export const jarvisService = {
   // Non-streaming fallback/standard send
@@ -20,7 +20,7 @@ export const jarvisService = {
   }) {
     const token = localStorage.getItem('disciplineos_token');
     try {
-      const response = await fetch('/api/jarvis/chat/stream', {
+      const response = await fetch(`${API_BASE_URL}/jarvis/chat/stream`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
