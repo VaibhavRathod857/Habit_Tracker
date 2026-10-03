@@ -66,8 +66,8 @@ Render allows you to host the backend and frontend together on a free/starter pl
    | `JWT_REFRESH_SECRET` | *(Random 32-char string)* | e.g. `discipline_os_prod_refresh_2026_abc` |
    | `CLIENT_URL` | `https://your-service.onrender.com` | Your live Render domain |
    | `AI_PROVIDER` | `gemini` | Or `openai` |
-   | `AI_MODEL` | `gemini-3.8-flash` | Or `gpt-4o-mini` |
-   | `GEMINI_API_KEY` | `AQ.Ab8RN6IE...` | Your Google Gemini API Key |
+   | `AI_MODEL` | `gemini-3.1-flash-lite` | Or `gpt-4o-mini` |
+   | `GEMINI_API_KEY` | `your_gemini_api_key_here` | Your Google Gemini API Key |
 
 6. Click **Deploy Web Service**.
 
