@@ -1,10 +1,9 @@
 import { BaseAIProvider } from './BaseAIProvider.js';
+import { ENV } from '../../../config/env.js';
 
 /**
  * Honest, transparent Fallback Provider
- * Activated when no external AI API key (OpenAI / Gemini / Anthropic) is configured in server/.env.
- * Generates context-aware, distinct natural responses for common coaching intents
- * while transparently indicating that full multi-turn conversational reasoning is available with an API key.
+ * Activated when no external AI API key is configured or when cloud limits are exceeded.
  */
 export class FallbackProvider extends BaseAIProvider {
   constructor(config = {}) {
@@ -19,7 +18,17 @@ export class FallbackProvider extends BaseAIProvider {
     const query = userPrompt.toLowerCase().trim();
     const toolCalls = [];
 
-    const notice = `*[JARVIS Local Mode: No AI API key is configured in \`server/.env\`]*\n\n`;
+    const hasKey = Boolean(
+      (ENV.GEMINI_API_KEY && ENV.GEMINI_API_KEY.trim().length > 0) ||
+      (ENV.OPENAI_API_KEY && ENV.OPENAI_API_KEY.trim().length > 0) ||
+      (ENV.ANTHROPIC_API_KEY && ENV.ANTHROPIC_API_KEY.trim().length > 0) ||
+      (ENV.AI_API_KEY && ENV.AI_API_KEY.trim().length > 0)
+    );
+
+    let notice = '';
+    if (!hasKey) {
+      notice = '[JARVIS Local Mode: No AI API key is configured in server/.env]\n\n';
+    }
     let responseText = '';
 
     // 1. Greetings

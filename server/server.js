@@ -108,6 +108,11 @@ const startServer = async () => {
   await connectDB();
   const server = app.listen(ENV.PORT, () => {
     console.log(`[DisciplineOS API] Running in ${ENV.NODE_ENV} mode on http://localhost:${ENV.PORT}`);
+    const key = ENV.GEMINI_API_KEY || ENV.OPENAI_API_KEY || ENV.AI_API_KEY || ENV.ANTHROPIC_API_KEY || '';
+    console.log(`[JARVIS Diagnostics] AI Provider: ${ENV.AI_PROVIDER || 'auto'}`);
+    console.log(`[JARVIS Diagnostics] Model: ${ENV.AI_MODEL || 'auto'}`);
+    console.log(`[JARVIS Diagnostics] API Key Configured: ${key.length > 0}`);
+    console.log(`[JARVIS Diagnostics] API Key Length: ${key.length}`);
   });
 
   process.on('unhandledRejection', (err) => {

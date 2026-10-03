@@ -317,10 +317,31 @@ export const jarvisService = {
             const handler = jarvisToolRegistry[tc.name];
             if (handler) {
               const res = await handler(userId, tc.args || {});
-              if (!streamedContent.trim()) {
-                const summary = typeof res === 'object' ? JSON.stringify(res, null, 2) : String(res);
-                streamedContent = summary;
-                if (onToken) onToken(summary);
+              if (!streamedContent.trim() && provider.isConfigured()) {
+                formattedMessages.push({
+                  role: 'assistant',
+                  toolCalls: [tc],
+                });
+                formattedMessages.push({
+                  role: 'tool',
+                  tool_call_id: tc.id,
+                  name: tc.name,
+                  content: typeof res === 'object' ? res : { result: res },
+                });
+
+                try {
+                  await provider.streamChat({
+                    messages: formattedMessages,
+                    tools: JARVIS_TOOLS_SCHEMA,
+                    systemPrompt,
+                    onToken: (chunk) => {
+                      streamedContent += chunk;
+                      if (onToken) onToken(chunk);
+                    },
+                  });
+                } catch (followUpErr) {
+                  console.warn('[JARVIS Stream Follow-up Error]', followUpErr.message);
+                }
               }
             }
           }
@@ -328,7 +349,11 @@ export const jarvisService = {
       }
 
       if (!streamedContent.trim()) {
-        streamedContent = "I'm with you. What would you like to focus on right now?";
+        if (actions.length > 0) {
+          streamedContent = "I have drafted the action plan above for your review. Take a look and confirm whenever you're ready to lock it in.";
+        } else {
+          streamedContent = "I'm here with you. What would you like to focus on right now?";
+        }
         if (onToken) onToken(streamedContent);
       }
 
